@@ -5,21 +5,24 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/Button'
 import Input from '@/components/Input'
-import { signIn } from '@/lib/services/auth'
+import { signUp } from '@/lib/services/auth'
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({})
+  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string; general?: string }>({})
 
   function validate(): boolean {
-    const newErrors: { email?: string; password?: string } = {}
+    const newErrors: { email?: string; password?: string; confirmPassword?: string } = {}
     if (!email) newErrors.email = 'E-mail é obrigatório.'
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'E-mail inválido.'
     if (!password) newErrors.password = 'Senha é obrigatória.'
     else if (password.length < 6) newErrors.password = 'Mínimo de 6 caracteres.'
+    if (!confirmPassword) newErrors.confirmPassword = 'Confirme a senha.'
+    else if (password !== confirmPassword) newErrors.confirmPassword = 'As senhas não correspondem.'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -32,11 +35,12 @@ export default function LoginPage() {
     setErrors({})
 
     try {
-      await signIn(email, password)
+      await signUp(email, password)
+      // Redireciona para dashboard (usuário será autenticado automaticamente)
       router.push('/dashboard')
       router.refresh()
     } catch (err) {
-      setErrors({ general: err instanceof Error ? err.message : 'Erro ao entrar.' })
+      setErrors({ general: err instanceof Error ? err.message : 'Erro ao criar conta.' })
     } finally {
       setLoading(false)
     }
@@ -59,7 +63,7 @@ export default function LoginPage() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">
-            Entrar na conta
+            Criar conta
           </h2>
 
           {errors.general && (
@@ -86,7 +90,17 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               error={errors.password}
-              autoComplete="current-password"
+              autoComplete="new-password"
+            />
+
+            <Input
+              label="Confirmar Senha"
+              type="password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              error={errors.confirmPassword}
+              autoComplete="new-password"
             />
 
             <Button
@@ -96,14 +110,14 @@ export default function LoginPage() {
               loading={loading}
               className="mt-2"
             >
-              Entrar
+              Criar conta
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-500">
-            Não tem uma conta?{' '}
-            <Link href="/signup" className="text-green-600 hover:text-green-700 font-medium">
-              Criar conta
+            Já tem uma conta?{' '}
+            <Link href="/login" className="text-green-600 hover:text-green-700 font-medium">
+              Entrar
             </Link>
           </p>
         </div>
