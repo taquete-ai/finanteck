@@ -94,6 +94,30 @@ export async function createTransaction(input: TransactionInput): Promise<Transa
 }
 
 /**
+ * Atualiza uma transação existente.
+ */
+export async function updateTransaction(id: string, input: TransactionInput): Promise<Transaction> {
+  const supabase = createClient()
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .update({
+      type: DB_TYPE_MAP[input.type],
+      category: input.category,
+      description: input.description,
+      amount: input.amount,
+      date: input.date,
+    })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw new Error('Erro ao atualizar transação.')
+
+  return mapRow(data)
+}
+
+/**
  * Remove uma transação pelo id.
  */
 export async function deleteTransaction(id: string): Promise<void> {
