@@ -13,9 +13,6 @@ export async function signIn(email: string, password: string): Promise<User> {
     if (error.message.includes('Invalid login credentials')) {
       throw new Error('E-mail ou senha incorretos.')
     }
-    if (error.message.includes('Email not confirmed')) {
-      throw new Error('Confirme seu e-mail antes de entrar.')
-    }
     throw new Error('Erro ao entrar. Tente novamente.')
   }
 
