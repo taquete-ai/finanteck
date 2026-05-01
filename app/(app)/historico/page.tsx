@@ -16,7 +16,7 @@ import {
 } from '@/types'
 
 const ALL_CATEGORIES: Category[] = Array.from(
-  new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES])
+  new Set<Category>([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES])
 )
 
 export default function HistoricoPage() {
