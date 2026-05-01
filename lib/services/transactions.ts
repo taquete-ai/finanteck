@@ -37,6 +37,18 @@ function mapRow(row: any): Transaction {
 export async function getTransactions(filters?: TransactionFilters): Promise<Transaction[]> {
   const supabase = createClient()
 
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      // RLS vai rejeitar se não houver sessão, então retorna array vazio
+      return []
+    }
+  } catch {
+    // Se getUser falhar, retorna vazio ao invés de quebrar
+    return []
+  }
+
   let query = supabase
     .from('transactions')
     .select('*')
