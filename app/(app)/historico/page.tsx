@@ -15,9 +15,10 @@ import {
   INCOME_CATEGORIES,
 } from '@/types'
 
-const ALL_CATEGORIES: Category[] = Array.from(
-  new Set<Category>([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES])
-)
+const ALL_CATEGORIES: Category[] = [
+  ...INCOME_CATEGORIES,
+  ...EXPENSE_CATEGORIES,
+]
 
 export default function HistoricoPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
