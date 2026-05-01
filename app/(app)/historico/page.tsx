@@ -1,5 +1,6 @@
 'use client'
 
+// Página de histórico de transações
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Card from '@/components/Card'
