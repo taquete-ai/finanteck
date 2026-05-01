@@ -1,14 +1,10 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 
-export default async function Home() {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // Redireciona baseado no status de autenticação
-  if (user) {
-    redirect('/dashboard')
-  } else {
-    redirect('/login')
-  }
+/**
+ * Página raiz (/). Redireciona imediatamente para /login.
+ * O middleware valida a autenticação e redireciona para /dashboard se o usuário estiver logado.
+ * Esta abordagem evita travamento causado por chamadas assíncronas ao Supabase.
+ */
+export default function Home() {
+  redirect('/login')
 }
