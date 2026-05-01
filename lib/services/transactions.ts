@@ -32,14 +32,21 @@ function mapRow(row: any): Transaction {
 /**
  * Busca todas as transações do usuário logado.
  * Aplica filtros opcionais de tipo, categoria e intervalo de datas.
- * O RLS (Row Level Security) do Supabase automaticamente filtra por user_id.
+ *
+ * SEGURANÇA: Valida que o usuário está autenticado e filtra manualmente por user_id
+ * (além do RLS do Supabase) para prevenir vazamento de dados entre usuários.
  */
 export async function getTransactions(filters?: TransactionFilters): Promise<Transaction[]> {
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Validação crítica: usuário DEVE estar autenticado
+  if (!user) throw new Error('Usuário não autenticado.')
 
   let query = supabase
     .from('transactions')
     .select('*')
+    .eq('user_id', user.id)  // Filtro manual para isolamento de dados
     .order('date', { ascending: false })
     .order('created_at', { ascending: false })
 
